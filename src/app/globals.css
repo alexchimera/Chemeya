@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg-void: #050A14;
+  --color-bg-panel: #0A1628;
+  --color-bg-inset: #071020;
+  --color-bg-raised: #0F1E38;
+
+  --color-amber: #E8913A;
+  --color-amber-bright: #F5C87A;
+  --color-amber-dim: #8B5E2A;
+
+  --color-cyan: #00D4AA;
+  --color-cyan-bright: #33FFD4;
+  --color-cyan-dim: #1A6B5C;
+
+  --color-lime: #AAEE22;
+  --color-lime-dim: #5C7A1A;
+
+  --color-red: #D42A2A;
+  --color-red-dim: #6B1A1A;
+
+  --color-yellow: #EFB127;
+  --color-blue: #2A7BD4;
+  --color-green: #4CAF50;
+
+  --color-text-primary: #E8913A;
+  --color-text-bright: #F5C87A;
+  --color-text-secondary: #8B5E2A;
+  --color-text-muted: #4A3520;
+  --color-text-structural: #00D4AA;
+  --color-text-label: #1A6B5C;
+
+  --font-mono: "IBM Plex Mono", "Fira Code", "JetBrains Mono", "Courier New", monospace;
+}
+
+:root {
+  --amber-glow: rgba(232, 145, 58, 0.15);
+  --amber-faint: rgba(232, 145, 58, 0.06);
+  --cyan-glow: rgba(0, 212, 170, 0.12);
+  --cyan-faint: rgba(0, 212, 170, 0.04);
+  --lime-glow: rgba(170, 238, 34, 0.12);
+  --red-glow: rgba(212, 42, 42, 0.15);
+}
+
+* {
+  border-radius: 0 !important;
+}
+
+body {
+  background: #050A14;
+  color: #E8913A;
+  font-family: "IBM Plex Mono", "Fira Code", "JetBrains Mono", "Courier New", monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Scan lines overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* CRT flicker */
+@keyframes flicker {
+  0%, 97%, 100% { opacity: 1; }
+  98% { opacity: 0.88; }
+  99% { opacity: 0.94; }
+}
+
+/* Subtle pulse for empty states */
+@keyframes pulse-dim {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Dot-matrix grid background */
+.dot-matrix {
+  background-image: radial-gradient(
+    circle, rgba(0, 212, 170, 0.08) 1px, transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(232, 145, 58, 0.3);
+  color: #F5C87A;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050A14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1A6B5C;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00D4AA;
+}
+
+/* Input focus styles */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #00D4AA !important;
+  box-shadow: 0 0 6px rgba(0, 212, 170, 0.2);
+}
