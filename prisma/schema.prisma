@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Program {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  prefix      String   @unique
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  compounds        Compound[]
+  blockers         Blocker[]
+  designHypotheses DesignHypothesis[]
+  cycleMetrics     CycleMetric[]
+  decisionMetrics  DecisionMetric[]
+}
+
+model Compound {
+  id             String   @id @default(cuid())
+  compoundId     String   @unique
+  programId      String
+  program        Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  scaffold       String
+  target         String
+  description    String
+  stage          Stage    @default(DESIGN)
+  priority       Priority @default(MEDIUM)
+  daysInStage    Int      @default(0)
+  stageEnteredAt DateTime @default(now())
+  status         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  blockers       Blocker[]
+}
+
+enum Stage {
+  DESIGN
+  MAKE
+  TEST
+  ANALYZE
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Blocker {
+  id          String    @id @default(cuid())
+  programId   String
+  program     Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  severity    Severity
+  compoundId  String?
+  compound    Compound? @relation(fields: [compoundId], references: [id], onDelete: SetNull)
+  resolved    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum Severity {
+  RED
+  AMBER
+  GREEN
+}
+
+model DesignHypothesis {
+  id        String   @id @default(cuid())
+  programId String
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  label     String
+  content   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CycleMetric {
+  id                   String   @id @default(cuid())
+  programId            String
+  program              Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  cycleNumber          Int
+  weekOf               DateTime
+  avgCycleTimeDays     Float
+  activeCompounds      Int
+  synthesisSuccessRate Float
+  potencyHitRate       Float
+  createdAt            DateTime @default(now())
+}
+
+model DecisionMetric {
+  id        String  @id @default(cuid())
+  programId String
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  label     String
+  target    String
+  current   String?
+  order     Int
+}
