@@ -1,5 +1,3 @@
-import { NervPanel } from './nerv-panel'
-
 type MetricCardProps = {
   label: string
   value: string | number | null
@@ -7,20 +5,20 @@ type MetricCardProps = {
   coord?: string
 }
 
-export function MetricCard({ label, value, subtitle, coord }: MetricCardProps) {
+export function MetricCard({ label, value, subtitle }: MetricCardProps) {
   return (
-    <NervPanel coord={coord} className="flex flex-col gap-1 min-w-0">
-      <div className="text-[10px] uppercase tracking-[0.1em] text-text-structural">
-        {value != null ? label : 'AWAITING DATA'}
+    <div className="bg-bg-primary rounded-lg border border-border p-4 flex flex-col gap-1">
+      <div className="text-xs font-medium text-text-secondary">
+        {value != null ? label : 'Awaiting data'}
       </div>
-      <div className="text-[28px] font-semibold text-amber-bright leading-none tracking-wider">
-        {value ?? '---'}
+      <div className="text-2xl font-semibold text-text-primary leading-none">
+        {value ?? '—'}
       </div>
       {subtitle && (
-        <div className="text-[10px] text-amber-dim uppercase tracking-[0.05em]">
+        <div className="text-xs text-text-tertiary">
           {subtitle}
         </div>
       )}
-    </NervPanel>
+    </div>
   )
 }

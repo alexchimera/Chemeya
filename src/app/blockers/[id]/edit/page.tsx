@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
-import { NervFrame } from '@/components/nerv/nerv-frame'
 import { NervInput } from '@/components/nerv/nerv-input'
 import { NervTextarea } from '@/components/nerv/nerv-input'
 import { NervSelect } from '@/components/nerv/nerv-select'
@@ -24,42 +23,40 @@ export default async function EditBlockerPage({ params }: { params: Promise<{ id
   const updateAction = updateBlocker.bind(null, blocker.id)
 
   return (
-    <div className="min-h-screen bg-bg-void flex items-center justify-center p-4">
-      <NervFrame className="w-full max-w-lg p-6">
-        <NervFrame className="p-6">
-          <div className="text-amber text-[14px] uppercase tracking-[0.1em] mb-6">
-            ▷ MODIFY IMPEDIMENT
+    <div className="min-h-screen bg-bg-secondary flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-bg-primary rounded-xl border border-border shadow-sm p-8">
+        <h1 className="text-lg font-semibold text-text-primary mb-6">
+          Edit Blocker
+        </h1>
+        <form action={updateAction} className="space-y-4">
+          <input type="hidden" name="programId" value={blocker.programId} />
+          <NervInput label="Title" name="title" required defaultValue={blocker.title} />
+          <NervTextarea label="Description" name="description" required defaultValue={blocker.description} />
+          <NervSelect
+            label="Severity"
+            name="severity"
+            defaultValue={blocker.severity}
+            options={[
+              { value: 'RED', label: 'Critical' },
+              { value: 'AMBER', label: 'Warning' },
+              { value: 'GREEN', label: 'Low' },
+            ]}
+          />
+          <NervSelect
+            label="Linked Compound"
+            name="compoundId"
+            defaultValue={blocker.compoundId || ''}
+            options={[
+              { value: '', label: 'None' },
+              ...compounds.map(c => ({ value: c.id, label: c.compoundId })),
+            ]}
+          />
+          <div className="flex justify-end gap-3 pt-2">
+            <NervButton href={`/?program=${blocker.programId}`} variant="default">Cancel</NervButton>
+            <NervButton type="submit" variant="primary">Save</NervButton>
           </div>
-          <form action={updateAction} className="space-y-4">
-            <input type="hidden" name="programId" value={blocker.programId} />
-            <NervInput label="Title" name="title" required defaultValue={blocker.title} />
-            <NervTextarea label="Description" name="description" required defaultValue={blocker.description} />
-            <NervSelect
-              label="Severity"
-              name="severity"
-              defaultValue={blocker.severity}
-              options={[
-                { value: 'RED', label: 'RED' },
-                { value: 'AMBER', label: 'AMBER' },
-                { value: 'GREEN', label: 'GREEN' },
-              ]}
-            />
-            <NervSelect
-              label="Linked Compound"
-              name="compoundId"
-              defaultValue={blocker.compoundId || ''}
-              options={[
-                { value: '', label: '— NONE —' },
-                ...compounds.map(c => ({ value: c.id, label: c.compoundId })),
-              ]}
-            />
-            <div className="flex justify-end gap-3 pt-2">
-              <NervButton href={`/?program=${blocker.programId}`} variant="default">ABORT</NervButton>
-              <NervButton type="submit" variant="primary">UPDATE</NervButton>
-            </div>
-          </form>
-        </NervFrame>
-      </NervFrame>
+        </form>
+      </div>
     </div>
   )
 }

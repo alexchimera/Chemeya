@@ -11,8 +11,8 @@ type InputProps = {
 
 export function NervInput({ label, name, type = 'text', defaultValue, required, maxLength, placeholder, className }: InputProps) {
   return (
-    <div className={`space-y-1 ${className || ''}`}>
-      <label htmlFor={name} className="block text-[10px] uppercase tracking-[0.1em] text-text-structural">
+    <div className={`space-y-1.5 ${className || ''}`}>
+      <label htmlFor={name} className="block text-sm font-medium text-text-primary">
         {label}
       </label>
       <input
@@ -23,7 +23,7 @@ export function NervInput({ label, name, type = 'text', defaultValue, required, 
         required={required}
         maxLength={maxLength}
         placeholder={placeholder}
-        className="w-full bg-bg-inset border border-cyan-dim px-3 py-1.5 text-amber text-[12px] tracking-[0.05em] placeholder:text-text-muted"
+        className="w-full bg-bg-primary border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary"
       />
     </div>
   )
@@ -31,8 +31,8 @@ export function NervInput({ label, name, type = 'text', defaultValue, required, 
 
 export function NervTextarea({ label, name, defaultValue, required, placeholder, rows = 3, className }: InputProps & { rows?: number }) {
   return (
-    <div className={`space-y-1 ${className || ''}`}>
-      <label htmlFor={name} className="block text-[10px] uppercase tracking-[0.1em] text-text-structural">
+    <div className={`space-y-1.5 ${className || ''}`}>
+      <label htmlFor={name} className="block text-sm font-medium text-text-primary">
         {label}
       </label>
       <textarea
@@ -42,7 +42,7 @@ export function NervTextarea({ label, name, defaultValue, required, placeholder,
         required={required}
         placeholder={placeholder}
         rows={rows}
-        className="w-full bg-bg-inset border border-cyan-dim px-3 py-1.5 text-amber text-[12px] tracking-[0.05em] placeholder:text-text-muted resize-none"
+        className="w-full bg-bg-primary border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary resize-none"
       />
     </div>
   )

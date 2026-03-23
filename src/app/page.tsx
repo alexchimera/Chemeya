@@ -4,18 +4,10 @@ import { NervFrame } from '@/components/nerv/nerv-frame'
 import { NervPanel } from '@/components/nerv/nerv-panel'
 import { NervButton } from '@/components/nerv/nerv-button'
 import { MetricCard } from '@/components/nerv/metric-card'
-import { CompoundCard } from '@/components/nerv/compound-card'
 import { KanbanBoard } from '@/components/kanban-board'
 import Link from 'next/link'
 
 const STAGES = ['DESIGN', 'MAKE', 'TEST', 'ANALYZE'] as const
-
-const stageStyles = {
-  DESIGN: { headerBg: 'rgba(232, 145, 58, 0.1)', headerText: 'text-amber', border: 'rgba(232, 145, 58, 0.3)' },
-  MAKE: { headerBg: 'rgba(0, 212, 170, 0.1)', headerText: 'text-cyan', border: 'rgba(0, 212, 170, 0.3)' },
-  TEST: { headerBg: 'rgba(42, 123, 212, 0.1)', headerText: 'text-blue', border: 'rgba(42, 123, 212, 0.3)' },
-  ANALYZE: { headerBg: 'rgba(212, 42, 42, 0.1)', headerText: 'text-red', border: 'rgba(212, 42, 42, 0.3)' },
-}
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ program?: string }> }) {
   const params = await searchParams
@@ -23,20 +15,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   if (programs.length === 0) {
     return (
-      <div className="min-h-screen bg-bg-void flex flex-col">
+      <div className="min-h-screen bg-bg-secondary flex flex-col">
         <Header programName={null} programId={null} programs={[]} stageCounts={{ design: 0, make: 0, test: 0 }} cycleNumber={null} />
         <div className="flex-1 flex items-center justify-center">
-          <NervFrame className="p-8">
-            <div className="text-center space-y-4" style={{ animation: 'pulse-dim 3s ease-in-out infinite' }}>
-              <div className="text-amber-dim text-[14px] uppercase tracking-[0.1em]">▷ DMTA OBEYA</div>
-              <div className="text-amber-dim text-[12px] uppercase tracking-[0.1em]">
-                SYSTEM STANDBY // AWAITING INITIALIZATION
-              </div>
-              <NervButton href="/programs/new" variant="primary">
-                INITIALIZE FIRST PROGRAM
-              </NervButton>
-            </div>
-          </NervFrame>
+          <div className="text-center space-y-4">
+            <h2 className="text-lg font-semibold text-text-primary">Welcome to DMTA Obeya</h2>
+            <p className="text-sm text-text-secondary">
+              Get started by creating your first program.
+            </p>
+            <NervButton href="/programs/new" variant="primary">
+              Create Program
+            </NervButton>
+          </div>
         </div>
       </div>
     )
@@ -73,7 +63,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     orderBy: { cycleNumber: 'desc' },
   })
 
-  // Update daysInStage for display
   const now = new Date()
   const compoundsWithDays = compounds.map(c => ({
     ...c,
@@ -94,7 +83,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   }
 
   return (
-    <div className="min-h-screen bg-bg-void flex flex-col">
+    <div className="min-h-screen bg-bg-secondary flex flex-col">
       <Header
         programName={currentProgram.name}
         programId={currentProgram.id}
@@ -103,65 +92,59 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         cycleNumber={latestCycle?.cycleNumber ?? null}
       />
 
-      <main className="flex-1 p-3 space-y-3">
+      <main className="flex-1 p-4 space-y-4 max-w-[1400px] mx-auto w-full">
         {/* Metric Cards */}
-        <NervFrame>
-          <div className="grid grid-cols-4 gap-2">
-            <MetricCard
-              label="AVG CYCLE TIME"
-              value={latestCycle ? `${latestCycle.avgCycleTimeDays.toFixed(1)}D` : null}
-              subtitle="DAYS PER CYCLE"
-              coord="0x7A1"
-            />
-            <MetricCard
-              label="ACTIVE COMPOUNDS"
-              value={compounds.length || null}
-              subtitle="IN PIPELINE"
-              coord="0x7A2"
-            />
-            <MetricCard
-              label="SYNTH SUCCESS"
-              value={latestCycle ? `${latestCycle.synthesisSuccessRate.toFixed(0)}%` : null}
-              subtitle="SYNTHESIS RATE"
-              coord="0x7A3"
-            />
-            <MetricCard
-              label="POTENCY HITS"
-              value={latestCycle ? `${latestCycle.potencyHitRate.toFixed(0)}%` : null}
-              subtitle="HIT RATE"
-              coord="0x7A4"
-            />
-          </div>
-        </NervFrame>
+        <div className="grid grid-cols-4 gap-4">
+          <MetricCard
+            label="Avg Cycle Time"
+            value={latestCycle ? `${latestCycle.avgCycleTimeDays.toFixed(1)}d` : null}
+            subtitle="Days per cycle"
+          />
+          <MetricCard
+            label="Active Compounds"
+            value={compounds.length || null}
+            subtitle="In pipeline"
+          />
+          <MetricCard
+            label="Synth Success"
+            value={latestCycle ? `${latestCycle.synthesisSuccessRate.toFixed(0)}%` : null}
+            subtitle="Synthesis rate"
+          />
+          <MetricCard
+            label="Potency Hits"
+            value={latestCycle ? `${latestCycle.potencyHitRate.toFixed(0)}%` : null}
+            subtitle="Hit rate"
+          />
+        </div>
 
         {/* Kanban Board */}
         <KanbanBoard programId={currentProgram.id} compoundsByStage={compoundsByStage} />
 
         {/* Bottom Panels */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {/* Blockers Panel */}
-          <NervPanel label="BLOCKERS & ACTIONS" coord="0xB01">
-            <div className="pt-2 space-y-2">
+          <NervPanel label="Blockers & Actions">
+            <div className="space-y-2">
               {blockers.length === 0 ? (
-                <div className="text-amber-dim text-[11px] uppercase tracking-[0.1em] text-center py-4">
-                  NO ACTIVE BLOCKERS
+                <div className="text-text-tertiary text-sm text-center py-6">
+                  No active blockers
                 </div>
               ) : (
                 blockers.map(b => (
-                  <div key={b.id} className="flex items-start gap-2 p-2 border border-cyan/10">
-                    <span className={`mt-0.5 text-[10px] ${
-                      b.severity === 'RED' ? 'text-red' : b.severity === 'AMBER' ? 'text-yellow' : 'text-green'
-                    }`}>●</span>
+                  <div key={b.id} className="flex items-start gap-3 p-3 rounded-lg bg-bg-secondary">
+                    <span className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${
+                      b.severity === 'RED' ? 'bg-red' : b.severity === 'AMBER' ? 'bg-yellow' : 'bg-green'
+                    }`} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-amber text-[11px] uppercase tracking-wider">{b.title}</div>
-                      <div className="text-text-secondary text-[10px] mt-0.5">{b.description}</div>
+                      <div className="text-sm font-medium text-text-primary">{b.title}</div>
+                      <div className="text-xs text-text-secondary mt-0.5">{b.description}</div>
                       {b.compound && (
-                        <div className="text-cyan-dim text-[9px] mt-0.5">→ {b.compound.compoundId}</div>
+                        <div className="text-xs text-accent mt-0.5">{b.compound.compoundId}</div>
                       )}
                     </div>
                     <form action={async () => { 'use server'; const { resolveBlocker } = await import('@/lib/actions/blockers'); await resolveBlocker(b.id) }}>
-                      <button type="submit" className="text-[9px] text-cyan uppercase tracking-wider hover:text-cyan-bright px-1.5 py-0.5 border border-cyan/30 cursor-pointer">
-                        RESOLVE
+                      <button type="submit" className="text-xs font-medium text-accent hover:text-accent-hover px-2.5 py-1 rounded-md border border-border cursor-pointer transition-colors">
+                        Resolve
                       </button>
                     </form>
                   </div>
@@ -169,26 +152,26 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               )}
               <div className="pt-1">
                 <NervButton href={`/blockers/new?program=${currentProgram.id}`} variant="default">
-                  + LOG BLOCKER
+                  + Log Blocker
                 </NervButton>
               </div>
             </div>
           </NervPanel>
 
           {/* Design Hypotheses & Decision Metrics Panel */}
-          <NervPanel label="DESIGN HYPOTHESES & METRICS" coord="0xB02">
-            <div className="pt-2 space-y-3">
+          <NervPanel label="Hypotheses & Metrics">
+            <div className="space-y-4">
               {/* Hypotheses */}
               <div>
-                <div className="text-text-structural text-[10px] uppercase tracking-[0.1em] mb-1.5">HYPOTHESES</div>
+                <div className="text-xs font-medium text-text-secondary mb-2">Hypotheses</div>
                 {hypotheses.length === 0 ? (
-                  <div className="text-amber-dim text-[10px] uppercase tracking-[0.1em] py-2">AWAITING DATA</div>
+                  <div className="text-text-tertiary text-xs py-2">No data yet</div>
                 ) : (
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {hypotheses.map(h => (
-                      <div key={h.id} className="border border-cyan/10 p-1.5">
-                        <div className="text-amber text-[10px] uppercase tracking-wider">{h.label}</div>
-                        <div className="text-text-secondary text-[10px] mt-0.5">{h.content}</div>
+                      <div key={h.id} className="rounded-lg bg-bg-secondary p-2.5">
+                        <div className="text-sm font-medium text-text-primary">{h.label}</div>
+                        <div className="text-xs text-text-secondary mt-0.5">{h.content}</div>
                       </div>
                     ))}
                   </div>
@@ -197,24 +180,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
               {/* Decision Metrics */}
               <div>
-                <div className="text-text-structural text-[10px] uppercase tracking-[0.1em] mb-1.5">DECISION METRICS</div>
+                <div className="text-xs font-medium text-text-secondary mb-2">Decision Metrics</div>
                 {decisionMetrics.length === 0 ? (
-                  <div className="text-amber-dim text-[10px] uppercase tracking-[0.1em] py-2">AWAITING DATA</div>
+                  <div className="text-text-tertiary text-xs py-2">No data yet</div>
                 ) : (
-                  <table className="w-full text-[10px]">
+                  <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-text-structural uppercase tracking-wider">
-                        <th className="text-left py-0.5 pr-2">METRIC</th>
-                        <th className="text-left py-0.5 pr-2">TARGET</th>
-                        <th className="text-left py-0.5">CURRENT</th>
+                      <tr className="text-xs text-text-secondary">
+                        <th className="text-left py-1.5 pr-3 font-medium">Metric</th>
+                        <th className="text-left py-1.5 pr-3 font-medium">Target</th>
+                        <th className="text-left py-1.5 font-medium">Current</th>
                       </tr>
                     </thead>
                     <tbody>
                       {decisionMetrics.map(m => (
-                        <tr key={m.id} className="border-t border-cyan/10">
-                          <td className="text-amber py-0.5 pr-2 uppercase">{m.label}</td>
-                          <td className="text-amber-dim py-0.5 pr-2">{m.target}</td>
-                          <td className="text-amber-bright py-0.5">{m.current || '---'}</td>
+                        <tr key={m.id} className="border-t border-border">
+                          <td className="text-text-primary py-1.5 pr-3">{m.label}</td>
+                          <td className="text-text-secondary py-1.5 pr-3">{m.target}</td>
+                          <td className="text-text-primary py-1.5 font-medium">{m.current || '—'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -223,7 +206,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </div>
 
               <NervButton href={`/settings?program=${currentProgram.id}`} variant="default">
-                MANAGE IN CONFIG
+                Manage in Settings
               </NervButton>
             </div>
           </NervPanel>
