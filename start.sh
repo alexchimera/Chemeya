@@ -6,4 +6,5 @@ else
   npx prisma migrate deploy || echo "WARNING: migrations failed, starting server anyway"
 fi
 
+export HOSTNAME=0.0.0.0
 exec node .next/standalone/server.js
