@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
-import { NervFrame } from '@/components/nerv/nerv-frame'
 import { NervPanel } from '@/components/nerv/nerv-panel'
 import { NervInput } from '@/components/nerv/nerv-input'
 import { NervTextarea } from '@/components/nerv/nerv-input'
@@ -8,11 +7,7 @@ import { NervButton } from '@/components/nerv/nerv-button'
 import { updateProgram } from '@/lib/actions/programs'
 import {
   createHypothesis,
-  updateHypothesis,
-  deleteHypothesis,
   createDecisionMetric,
-  updateDecisionMetric,
-  deleteDecisionMetric,
   createCycleMetric,
 } from '@/lib/actions/settings'
 
@@ -41,18 +36,19 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const updateProgramAction = updateProgram.bind(null, program.id)
 
   return (
-    <div className="min-h-screen bg-bg-void p-4">
-      <div className="max-w-4xl mx-auto space-y-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-amber text-[14px] uppercase tracking-[0.1em]">
-            ▷ CONFIGURATION // {program.name}
+    <div className="min-h-screen bg-bg-secondary p-6">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-semibold text-text-primary">Settings</h1>
+            <p className="text-sm text-text-secondary">{program.name}</p>
           </div>
-          <NervButton href={`/?program=${program.id}`} variant="default">← RETURN TO BOARD</NervButton>
+          <NervButton href={`/?program=${program.id}`} variant="default">&larr; Back to Board</NervButton>
         </div>
 
         {/* Program Data */}
-        <NervPanel label="PROGRAM DATA" coord="0xC01">
-          <form action={updateProgramAction} className="space-y-3 pt-2">
+        <NervPanel label="Program Data">
+          <form action={updateProgramAction} className="space-y-4">
             <NervInput label="Name" name="name" required defaultValue={program.name} />
             <NervInput label="Prefix" name="prefix" required maxLength={6} defaultValue={program.prefix} />
             <NervTextarea label="Description" name="description" defaultValue={program.description || ''} />
@@ -62,70 +58,70 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 name="active"
                 id="active"
                 defaultChecked={program.active}
-                className="accent-lime"
+                className="rounded border-border text-accent focus:ring-accent"
               />
-              <label htmlFor="active" className="text-[11px] text-amber uppercase tracking-wider">ACTIVE</label>
+              <label htmlFor="active" className="text-sm text-text-primary">Active</label>
             </div>
-            <NervButton type="submit" variant="primary">SAVE CHANGES</NervButton>
+            <NervButton type="submit" variant="primary">Save Changes</NervButton>
           </form>
         </NervPanel>
 
         {/* Design Hypotheses */}
-        <NervPanel label="DESIGN HYPOTHESES" coord="0xC02">
-          <div className="space-y-2 pt-2">
+        <NervPanel label="Design Hypotheses">
+          <div className="space-y-3">
             {hypotheses.map(h => (
-              <div key={h.id} className="border border-cyan/10 p-2 space-y-1">
+              <div key={h.id} className="rounded-lg bg-bg-secondary p-3 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-amber text-[11px] uppercase tracking-wider">{h.label}</span>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[9px] ${h.active ? 'text-green' : 'text-amber-dim'}`}>
-                      {h.active ? 'ACTIVE' : 'INACTIVE'}
+                  <span className="text-sm font-medium text-text-primary">{h.label}</span>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs ${h.active ? 'text-green' : 'text-text-tertiary'}`}>
+                      {h.active ? 'Active' : 'Inactive'}
                     </span>
                     <form action={async () => { 'use server'; const { deleteHypothesis: del } = await import('@/lib/actions/settings'); await del(h.id) }}>
-                      <button type="submit" className="text-red text-[9px] hover:text-red/80 cursor-pointer">DELETE</button>
+                      <button type="submit" className="text-xs text-red hover:text-red/80 cursor-pointer">Delete</button>
                     </form>
                   </div>
                 </div>
-                <div className="text-text-secondary text-[10px]">{h.content}</div>
+                <div className="text-xs text-text-secondary">{h.content}</div>
               </div>
             ))}
 
-            <details className="pt-2">
-              <summary className="text-lime text-[10px] uppercase tracking-wider cursor-pointer hover:text-lime/80">
-                + ADD HYPOTHESIS
+            <details className="pt-1">
+              <summary className="text-sm font-medium text-accent cursor-pointer hover:text-accent-hover">
+                + Add Hypothesis
               </summary>
-              <form action={createHypothesis} className="space-y-2 pt-2">
+              <form action={createHypothesis} className="space-y-3 pt-3">
                 <input type="hidden" name="programId" value={program.id} />
-                <NervInput label="Label" name="label" required placeholder="e.g. HINGE BINDER" />
+                <NervInput label="Label" name="label" required placeholder="e.g. Hinge Binder" />
                 <NervTextarea label="Content" name="content" required placeholder="Hypothesis description..." />
-                <NervButton type="submit" variant="primary">ADD</NervButton>
+                <NervButton type="submit" variant="primary">Add</NervButton>
               </form>
             </details>
           </div>
         </NervPanel>
 
         {/* Decision Metrics */}
-        <NervPanel label="DECISION METRICS" coord="0xC03">
-          <div className="space-y-2 pt-2">
+        <NervPanel label="Decision Metrics">
+          <div className="space-y-3">
             {decisionMetrics.length > 0 && (
-              <table className="w-full text-[10px] mb-2">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-text-structural uppercase tracking-wider">
-                    <th className="text-left py-1 pr-2">METRIC</th>
-                    <th className="text-left py-1 pr-2">TARGET</th>
-                    <th className="text-left py-1 pr-2">CURRENT</th>
-                    <th className="text-right py-1"></th>
+                  <tr className="text-xs text-text-secondary">
+                    <th className="text-left py-2 pr-3 font-medium">Metric</th>
+                    <th className="text-left py-2 pr-3 font-medium">Target</th>
+                    <th className="text-left py-2 pr-3 font-medium">Current</th>
+                    <th className="text-right py-2 font-medium"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {decisionMetrics.map(m => (
-                    <tr key={m.id} className="border-t border-cyan/10">
-                      <td className="text-amber py-1 pr-2 uppercase">{m.label}</td>
-                      <td className="text-amber-dim py-1 pr-2">{m.target}</td>
-                      <td className="text-amber-bright py-1 pr-2">{m.current || '---'}</td>
-                      <td className="text-right py-1">
+                    <tr key={m.id} className="border-t border-border">
+                      <td className="text-text-primary py-2 pr-3">{m.label}</td>
+                      <td className="text-text-secondary py-2 pr-3">{m.target}</td>
+                      <td className="text-text-primary py-2 pr-3 font-medium">{m.current || '—'}</td>
+                      <td className="text-right py-2">
                         <form action={async () => { 'use server'; const { deleteDecisionMetric: del } = await import('@/lib/actions/settings'); await del(m.id) }} className="inline">
-                          <button type="submit" className="text-red text-[9px] hover:text-red/80 cursor-pointer">DEL</button>
+                          <button type="submit" className="text-xs text-red hover:text-red/80 cursor-pointer">Delete</button>
                         </form>
                       </td>
                     </tr>
@@ -135,44 +131,44 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             )}
 
             <details>
-              <summary className="text-lime text-[10px] uppercase tracking-wider cursor-pointer hover:text-lime/80">
-                + ADD METRIC
+              <summary className="text-sm font-medium text-accent cursor-pointer hover:text-accent-hover">
+                + Add Metric
               </summary>
-              <form action={createDecisionMetric} className="space-y-2 pt-2">
+              <form action={createDecisionMetric} className="space-y-3 pt-3">
                 <input type="hidden" name="programId" value={program.id} />
                 <NervInput label="Label" name="label" required placeholder="e.g. IC50" />
                 <NervInput label="Target" name="target" required placeholder="e.g. < 100 nM" />
                 <NervInput label="Current" name="current" placeholder="Current value" />
-                <NervButton type="submit" variant="primary">ADD</NervButton>
+                <NervButton type="submit" variant="primary">Add</NervButton>
               </form>
             </details>
           </div>
         </NervPanel>
 
         {/* Cycle Metrics */}
-        <NervPanel label="CYCLE METRICS" coord="0xC04">
-          <div className="space-y-2 pt-2">
+        <NervPanel label="Cycle Metrics">
+          <div className="space-y-3">
             {cycleMetrics.length > 0 && (
-              <table className="w-full text-[10px] mb-2">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-text-structural uppercase tracking-wider">
-                    <th className="text-left py-1">CYCLE</th>
-                    <th className="text-left py-1">WEEK</th>
-                    <th className="text-left py-1">AVG DAYS</th>
-                    <th className="text-left py-1">ACTIVE</th>
-                    <th className="text-left py-1">SYNTH %</th>
-                    <th className="text-left py-1">HIT %</th>
+                  <tr className="text-xs text-text-secondary">
+                    <th className="text-left py-2 font-medium">Cycle</th>
+                    <th className="text-left py-2 font-medium">Week</th>
+                    <th className="text-left py-2 font-medium">Avg Days</th>
+                    <th className="text-left py-2 font-medium">Active</th>
+                    <th className="text-left py-2 font-medium">Synth %</th>
+                    <th className="text-left py-2 font-medium">Hit %</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cycleMetrics.map(m => (
-                    <tr key={m.id} className="border-t border-cyan/10">
-                      <td className="text-amber py-1">{String(m.cycleNumber).padStart(2, '0')}</td>
-                      <td className="text-amber-dim py-1">{m.weekOf.toISOString().slice(0, 10)}</td>
-                      <td className="text-amber py-1">{m.avgCycleTimeDays.toFixed(1)}</td>
-                      <td className="text-amber py-1">{m.activeCompounds}</td>
-                      <td className="text-amber py-1">{m.synthesisSuccessRate.toFixed(0)}%</td>
-                      <td className="text-amber py-1">{m.potencyHitRate.toFixed(0)}%</td>
+                    <tr key={m.id} className="border-t border-border">
+                      <td className="text-text-primary py-2">{String(m.cycleNumber).padStart(2, '0')}</td>
+                      <td className="text-text-secondary py-2">{m.weekOf.toISOString().slice(0, 10)}</td>
+                      <td className="text-text-primary py-2">{m.avgCycleTimeDays.toFixed(1)}</td>
+                      <td className="text-text-primary py-2">{m.activeCompounds}</td>
+                      <td className="text-text-primary py-2">{m.synthesisSuccessRate.toFixed(0)}%</td>
+                      <td className="text-text-primary py-2">{m.potencyHitRate.toFixed(0)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -180,24 +176,24 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             )}
 
             <details>
-              <summary className="text-lime text-[10px] uppercase tracking-wider cursor-pointer hover:text-lime/80">
-                + LOG CYCLE
+              <summary className="text-sm font-medium text-accent cursor-pointer hover:text-accent-hover">
+                + Log Cycle
               </summary>
-              <form action={createCycleMetric} className="space-y-2 pt-2">
+              <form action={createCycleMetric} className="space-y-3 pt-3">
                 <input type="hidden" name="programId" value={program.id} />
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <NervInput label="Cycle Number" name="cycleNumber" type="number" required />
                   <NervInput label="Week Of" name="weekOf" type="date" required />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <NervInput label="Avg Cycle Time (Days)" name="avgCycleTimeDays" type="number" required />
                   <NervInput label="Active Compounds" name="activeCompounds" type="number" required />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <NervInput label="Synthesis Success %" name="synthesisSuccessRate" type="number" required />
                   <NervInput label="Potency Hit %" name="potencyHitRate" type="number" required />
                 </div>
-                <NervButton type="submit" variant="primary">LOG CYCLE</NervButton>
+                <NervButton type="submit" variant="primary">Log Cycle</NervButton>
               </form>
             </details>
           </div>

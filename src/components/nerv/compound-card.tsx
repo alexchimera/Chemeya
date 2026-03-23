@@ -12,42 +12,40 @@ type CompoundCardProps = {
 }
 
 const priorityStyles = {
-  HIGH: 'bg-red/20 text-red',
-  MEDIUM: 'bg-yellow/20 text-yellow',
-  LOW: 'bg-blue/20 text-blue',
+  HIGH: 'bg-red-light text-red',
+  MEDIUM: 'bg-yellow-light text-yellow',
+  LOW: 'bg-blue-light text-blue',
 }
 
-export function CompoundCard({ id, compoundId, description, priority, daysInStage, status, blockerCount, programId }: CompoundCardProps) {
-  const days = `D${String(daysInStage).padStart(2, '0')}`
-
+export function CompoundCard({ id, compoundId, description, priority, daysInStage, status, blockerCount }: CompoundCardProps) {
   return (
     <Link
       href={`/compounds/${id}/edit`}
-      className="block bg-bg-panel border border-cyan/15 p-2 hover:border-cyan/40 hover:shadow-[0_0_8px_rgba(232,145,58,0.25),inset_0_0_4px_rgba(232,145,58,0.05)] transition-all cursor-pointer group"
+      className="block bg-bg-primary border border-border rounded-lg p-3 hover:shadow-md hover:border-border/80 transition-all cursor-pointer"
     >
-      <div className="flex items-center justify-between gap-2 mb-1">
-        <span className="text-text-bright text-[13px] uppercase font-medium tracking-wider">
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <span className="text-sm font-semibold text-text-primary">
           {compoundId}
         </span>
-        <span className={`text-[9px] uppercase px-1.5 py-0.5 ${priorityStyles[priority]}`} style={{ borderRadius: '2px' }}>
-          {priority}
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${priorityStyles[priority]}`}>
+          {priority.charAt(0) + priority.slice(1).toLowerCase()}
         </span>
       </div>
-      <div className="text-text-secondary text-[11px] leading-snug mb-1.5 line-clamp-2">
+      <div className="text-text-secondary text-xs leading-relaxed mb-2 line-clamp-2">
         {description}
       </div>
-      <div className="flex items-center gap-2 text-[9px]">
-        <span className="bg-amber/20 text-amber px-1.5 py-0.5" style={{ borderRadius: '2px' }}>
-          {days}
+      <div className="flex items-center gap-1.5 text-xs">
+        <span className="bg-bg-tertiary text-text-secondary px-2 py-0.5 rounded-full">
+          {daysInStage}d
         </span>
         {status && (
-          <span className="bg-cyan/15 text-cyan px-1.5 py-0.5" style={{ borderRadius: '2px' }}>
+          <span className="bg-accent-light text-accent px-2 py-0.5 rounded-full">
             {status}
           </span>
         )}
         {blockerCount > 0 && (
-          <span className="bg-red/20 text-red px-1.5 py-0.5" style={{ borderRadius: '2px' }}>
-            {blockerCount} BLOCKER{blockerCount > 1 ? 'S' : ''}
+          <span className="bg-red-light text-red px-2 py-0.5 rounded-full">
+            {blockerCount} blocker{blockerCount > 1 ? 's' : ''}
           </span>
         )}
       </div>
